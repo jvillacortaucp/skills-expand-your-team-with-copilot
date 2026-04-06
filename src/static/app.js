@@ -569,6 +569,13 @@ document.addEventListener("DOMContentLoaded", () => {
         `
         }
       </div>
+      <div class="share-buttons">
+        <span class="share-label">Share:</span>
+        <button class="share-btn share-twitter" data-activity="${name}" title="Share on X (Twitter)" aria-label="Share ${name} on X (Twitter)">𝕏</button>
+        <button class="share-btn share-facebook" data-activity="${name}" title="Share on Facebook" aria-label="Share ${name} on Facebook">f</button>
+        <button class="share-btn share-whatsapp" data-activity="${name}" title="Share on WhatsApp" aria-label="Share ${name} on WhatsApp">💬</button>
+        <button class="share-btn share-copy" data-activity="${name}" title="Copy link" aria-label="Copy link for ${name}">🔗</button>
+      </div>
     `;
 
     // Add click handlers for delete buttons
@@ -586,6 +593,52 @@ document.addEventListener("DOMContentLoaded", () => {
         });
       }
     }
+
+    // Add click handlers for share buttons
+    const shareText = `Check out ${name} at Mergington High School!`;
+    const shareUrl = new URL(window.location.href);
+    shareUrl.searchParams.set("activity", name);
+    const shareUrlStr = shareUrl.toString();
+
+    activityCard.querySelector(".share-twitter").addEventListener("click", () => {
+      window.open(
+        `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareUrlStr)}`,
+        "_blank",
+        "noopener,noreferrer"
+      );
+    });
+
+    activityCard.querySelector(".share-facebook").addEventListener("click", () => {
+      window.open(
+        `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrlStr)}&quote=${encodeURIComponent(shareText)}`,
+        "_blank",
+        "noopener,noreferrer"
+      );
+    });
+
+    activityCard.querySelector(".share-whatsapp").addEventListener("click", () => {
+      window.open(
+        `https://wa.me/?text=${encodeURIComponent(shareText + " " + shareUrlStr)}`,
+        "_blank",
+        "noopener,noreferrer"
+      );
+    });
+
+    activityCard.querySelector(".share-copy").addEventListener("click", (e) => {
+      navigator.clipboard.writeText(shareUrlStr).then(() => {
+        const btn = e.currentTarget;
+        const original = btn.title;
+        btn.title = "Copied!";
+        btn.classList.add("share-copied");
+        setTimeout(() => {
+          btn.title = original;
+          btn.classList.remove("share-copied");
+        }, 2000);
+      }).catch(() => {
+        const btn = e.currentTarget;
+        btn.title = "Copy failed – please copy the URL manually";
+      });
+    });
 
     activitiesList.appendChild(activityCard);
   }
